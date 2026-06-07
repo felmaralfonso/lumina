@@ -357,7 +357,7 @@ export default function FileExplorer({
             <motion.div 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="border border-accent-primary p-8 rounded-2xl flex flex-col gap-4 bg-bg-secondary aspect-[3/4] justify-center"
+              className="border border-accent-primary p-5 rounded-xl flex flex-col gap-3 bg-bg-secondary h-40 justify-center"
             >
               <input 
                 autoFocus
@@ -390,14 +390,14 @@ export default function FileExplorer({
               key={folder.id}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="group relative border border-border-primary p-8 transition-all cursor-pointer hover:shadow-xl hover:-translate-y-1 aspect-[3/4] flex flex-col justify-between rounded-2xl bg-bg-secondary"
+              className="group relative border border-border-primary p-5 transition-all cursor-pointer hover:shadow-xl hover:-translate-y-1 h-40 flex flex-col justify-between rounded-xl bg-bg-secondary"
               onClick={() => {
                 setCurrentFolderId(folder.id);
                 window.dispatchEvent(new CustomEvent('lumina-folder-entered'));
               }}
             >
               <div>
-                <div className="text-text-secondary mb-4 group-hover:text-accent-primary transition-colors">
+                <div className="text-text-secondary mb-2 group-hover:text-accent-primary transition-colors">
                   <FolderIcon size={32} strokeWidth={1.5} />
                 </div>
                 {editingFolderId === folder.id ? (
@@ -411,10 +411,10 @@ export default function FileExplorer({
                     className="font-serif text-lg leading-tight w-full bg-transparent border-b border-accent-primary outline-none"
                   />
                 ) : (
-                  <h3 className="font-serif text-lg leading-tight">{folder.name}</h3>
+                  <h3 className="font-serif text-lg leading-tight truncate pr-4" title={folder.name}>{folder.name}</h3>
                 )}
               </div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary mt-2">Folder</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary mt-1">Folder</p>
               
               <div className="absolute top-4 right-4 flex gap-1">
                 <button 
@@ -448,12 +448,12 @@ export default function FileExplorer({
               key={file.id}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="group relative border border-border-primary p-8 transition-all cursor-pointer hover:shadow-xl hover:-translate-y-1 aspect-[3/4] flex flex-col justify-between rounded-2xl bg-bg-secondary"
+              className="group relative border border-border-primary p-5 transition-all cursor-pointer hover:shadow-xl hover:-translate-y-1 h-40 flex flex-col justify-between rounded-xl bg-bg-secondary"
               onClick={() => onFileSelect(file)}
             >
               <div>
                 <div className={cn(
-                  "mb-6 transition-colors",
+                  "mb-2 transition-colors",
                   file.type === 'pdf' ? "text-accent-primary" : 
                   file.type === 'audio' ? "text-[#2563EB]" :
                   file.type === 'image' ? "text-[#E11D48]" :
@@ -464,9 +464,9 @@ export default function FileExplorer({
                   {file.type === 'image' && <ImageIcon size={32} strokeWidth={1.5} />}
                   {file.type === 'doc' && <FileTextIcon size={32} strokeWidth={1.5} />}
                 </div>
-                <h3 className="font-serif text-lg leading-tight truncate pr-4">{file.name}</h3>
+                <h3 className="font-serif text-lg leading-tight truncate pr-4" title={file.name}>{file.name}</h3>
               </div>
-              <div className="flex flex-col gap-1 mt-4">
+              <div className="flex flex-col gap-0.5 mt-2">
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-text-primary">{file.type}</span>
                   <span className="w-1 h-1 rounded-full bg-border-secondary" />
