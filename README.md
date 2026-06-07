@@ -2,6 +2,8 @@
 
 Lumina is a sleek, modern web application designed for educators and students. It serves as a digital curriculum binder to organize lesson plans, handouts, and teaching resources, complete with interactive study tools like a Focus Timer, Notepad, Audio Broadcaster, and Live Annotation Blackboard.
 
+Lumina was designed and built specifically for educators (particularly ESL and IELTS teachers) and students who experience performance lags or find traditional virtual classrooms (such as the Blackboard app) heavy and difficult to use. By utilizing lightweight components, streamlined PDF annotations, and high-performance drawing contexts, Lumina delivers a fluid, zero-latency, and distraction-free workspace for interactive language coaching and instruction.
+
 ---
 
 ## ⚠️ Important: Preparing Files for Upload
