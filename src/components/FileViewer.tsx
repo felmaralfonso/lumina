@@ -16,22 +16,51 @@ const PDF_VIEWER_HTML = `<!DOCTYPE html>
 <div id="v"></div>
 <script type="module">
 import EmbedPDF from 'https://cdn.jsdelivr.net/npm/@embedpdf/snippet@2/dist/embedpdf.js';
+let viewer = null;
+let currentUrl = '';
+let currentThemePref = 'light';
+let currentAccent = '#E11D48';
+
+function getThemeConfig(pref, accent) {
+  const isDark = pref === 'dark';
+  return {
+    preference: pref,
+    [isDark ? 'dark' : 'light']: {
+      accent: {
+        primary: accent,
+        primaryHover: accent
+      }
+    }
+  };
+}
+
 window.addEventListener('message', e => {
   if (e.data?.type === 'load-pdf') {
     document.getElementById('v').innerHTML = '';
-    EmbedPDF.init({ 
+    currentUrl = e.data.url;
+    currentThemePref = e.data.themePref || 'light';
+    currentAccent = e.data.accentColor || '#E11D48';
+    viewer = EmbedPDF.init({ 
       type: 'container', 
       target: document.getElementById('v'), 
-      src: e.data.url,
+      src: currentUrl,
       features: {
         openFile: false,
         closeFile: false
       },
+      disabledCategories: ['document-open', 'document-close', 'annotation-comment-tool', 'annotation-text'],
       annotations: {
         selectAfterCreate: false,
         editAfterCreate: false
-      }
+      },
+      theme: getThemeConfig(currentThemePref, currentAccent)
     });
+  } else if (e.data?.type === 'update-theme') {
+    currentThemePref = e.data.themePref || 'light';
+    currentAccent = e.data.accentColor || '#E11D48';
+    if (viewer) {
+      viewer.setTheme(getThemeConfig(currentThemePref, currentAccent));
+    }
   }
 });
 window.addEventListener('keydown', e => {
@@ -94,7 +123,7 @@ export default function FileViewer({
   isSidebarLocked = false,
   setIsSidebarLocked
 }: FileViewerProps) {
-  const { colors } = useTheme();
+  const { theme, colors } = useTheme();
   const [isHovered, setIsHovered] = useState(false);
   const [switcherSearch, setSwitcherSearch] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -128,15 +157,21 @@ export default function FileViewer({
         iframeReadyRef.current = true;
         // If we already have a PDF queued, send it now
         if (pdfUrlRef.current && iframeRef.current) {
+          const themePref = ['midnight', 'forest', 'slate', 'espresso', 'velum'].includes(theme) ? 'dark' : 'light';
           iframeRef.current.contentWindow?.postMessage(
-            { type: 'load-pdf', url: pdfUrlRef.current }, '*'
+            { 
+              type: 'load-pdf', 
+              url: pdfUrlRef.current,
+              themePref,
+              accentColor: colors.accent
+            }, '*'
           );
         }
       }
     };
     window.addEventListener('message', onMessage);
     return () => window.removeEventListener('message', onMessage);
-  }, []);
+  }, [theme, colors.accent]);
 
   // When viewing a PDF, convert to blob URL and send to iframe
   useEffect(() => {
@@ -150,15 +185,33 @@ export default function FileViewer({
         pdfUrlRef.current = url;
         // Send to iframe
         if (iframeReadyRef.current && iframeRef.current) {
+          const themePref = ['midnight', 'forest', 'slate', 'espresso', 'velum'].includes(theme) ? 'dark' : 'light';
           iframeRef.current.contentWindow?.postMessage(
-            { type: 'load-pdf', url }, '*'
+            { 
+              type: 'load-pdf', 
+              url,
+              themePref,
+              accentColor: colors.accent
+            }, '*'
           );
         }
       })
       .catch(e => {
         console.error('Failed to create blob URL for PDF', e);
       });
-  }, [currentFile.content, currentFile.type]);
+  }, [currentFile.content, currentFile.type, theme, colors.accent]);
+
+  // Synchronize theme changes to PDF viewer iframe dynamically
+  useEffect(() => {
+    if (!iframeRef.current || !iframeReadyRef.current) return;
+    
+    const themePref = ['midnight', 'forest', 'slate', 'espresso', 'velum'].includes(theme) ? 'dark' : 'light';
+    iframeRef.current.contentWindow?.postMessage({
+      type: 'update-theme',
+      themePref,
+      accentColor: colors.accent
+    }, '*');
+  }, [theme, colors.accent]);
 
   const decodeContent = (base64: string) => {
     // Safety guard: only decode if it looks like a text doc, not a PDF/image binary
@@ -237,11 +290,11 @@ export default function FileViewer({
 
         <div className={cn(
           "h-full flex flex-col transition-all duration-300 relative z-20 w-full",
-          showFullSidebar ? "bg-[var(--bg-primary)] border-r border-black/10" : "bg-transparent"
+          showFullSidebar ? "bg-sidebar-bg border-r border-border-primary" : "bg-transparent"
         )}>
           {showFullSidebar ? (
             <>
-              <div className="p-4 border-b border-black/10 flex items-center justify-between shrink-0">
+              <div className="p-4 border-b border-border-primary flex items-center justify-between shrink-0">
                 <button
                   onClick={onClose}
                   className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest opacity-50 hover:text-accent-primary transition-colors"
@@ -252,7 +305,7 @@ export default function FileViewer({
                 </button>
                 <button
                   onClick={() => setIsSidebarOpen(false)}
-                  className="p-1 opacity-50 hover:opacity-100 hover:bg-black/5 rounded transition-colors"
+                  className="p-1 opacity-50 hover:opacity-100 hover:bg-hover-bg rounded transition-colors"
                   title="Collapse Sidebar"
                 >
                   <ChevronLeftIcon size={18} />
@@ -261,7 +314,7 @@ export default function FileViewer({
               {/* ... rest of full sidebar content ... */}
 
 
-              <div className="p-6 border-b border-black/10 bg-black/5 shrink-0">
+              <div className="p-6 border-b border-border-primary bg-hover-bg/30 shrink-0">
                 <h2 className="text-sm font-bold tracking-tight mb-1 line-clamp-2" title={currentFile.name}>
                   {currentFile.name}
                 </h2>
@@ -271,7 +324,7 @@ export default function FileViewer({
               </div>
 
               <div className="flex-1 flex flex-col overflow-hidden">
-                <div className="p-4 border-b border-black/10 shrink-0 space-y-3">
+                <div className="p-4 border-b border-border-primary shrink-0 space-y-3">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">Document Switcher</span>
                   </div>
@@ -279,12 +332,12 @@ export default function FileViewer({
                     value={switcherSearch}
                     onChange={(e) => setSwitcherSearch(e.target.value)}
                     placeholder="Search documents..."
-                    className="w-full bg-black/5 border border-black/10 px-3 py-2 text-[10px] uppercase font-bold tracking-widest outline-none focus:border-accent-primary transition-colors"
+                    className="w-full bg-bg-primary text-text-primary border border-border-primary px-3 py-2 text-[10px] uppercase font-bold tracking-widest outline-none focus:border-accent-primary transition-colors"
                   />
                 </div>
 
                 <div className="flex-1 overflow-auto">
-                  <p className="px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-[#9A9A96] sticky top-0 bg-white/90 backdrop-blur-sm z-10 border-b border-[#E5E5E1]/50">
+                  <p className="px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-text-secondary sticky top-0 bg-sidebar-bg/90 backdrop-blur-sm z-10 border-b border-border-primary/50">
                     Documents
                   </p>
                   {documentFiles.map(f => (
@@ -292,27 +345,27 @@ export default function FileViewer({
                       key={f.id}
                       onClick={() => onFileSelect(f)}
                       className={cn(
-                        "px-4 py-3 text-left text-xs hover:bg-black/5 flex items-center justify-between group cursor-pointer transition-colors border-l-4",
-                        f.id === currentFile.id ? "bg-black/5 border-accent-primary" : "border-transparent"
+                        "px-4 py-3 text-left text-xs hover:bg-hover-bg flex items-center justify-between group cursor-pointer transition-colors border-l-4",
+                        f.id === currentFile.id ? "bg-hover-bg border-accent-primary font-bold text-accent-primary" : "border-transparent text-text-primary"
                       )}
                     >
                       <div className="flex items-center gap-2 overflow-hidden">
-                        <span className={cn("truncate", f.id === currentFile.id ? "font-bold text-accent-primary" : "opacity-60")}>
+                        <span className={cn("truncate", f.id === currentFile.id ? "font-bold text-accent-primary" : "text-text-secondary")}>
                           {f.name}
                         </span>
                       </div>
                     </div>
                   ))}
                   {documentFiles.length === 0 && (
-                    <div className="px-4 py-8 text-center text-[10px] italic text-[#9A9A96]">No matching documents.</div>
+                    <div className="px-4 py-8 text-center text-[10px] italic text-text-secondary">No matching documents.</div>
                   )}
                 </div>
               </div>
 
               {/* Audio Section — shows audio files from the current folder */}
               {folderAudioFiles.length > 0 && (
-                <div className="border-t border-[#E5E5E1] bg-white shrink-0 max-h-52 flex flex-col overflow-hidden">
-                  <p className="px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-[#9A9A96] bg-[#F9F9F7] border-b border-[#E5E5E1]/50 shrink-0">
+                <div className="border-t border-border-primary bg-sidebar-bg shrink-0 max-h-52 flex flex-col overflow-hidden">
+                  <p className="px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-text-secondary bg-hover-bg/30 border-b border-border-primary/50 shrink-0">
                     🎵 Folder Audio
                   </p>
                   <div className="overflow-auto flex-1">
@@ -320,10 +373,10 @@ export default function FileViewer({
                       <button
                         key={af.id}
                         onClick={() => onSetActiveAudio(af)}
-                        className="w-full px-4 py-2.5 text-left text-xs hover:bg-[#F9F9F7] flex items-center gap-3 group transition-colors"
+                        className="w-full px-4 py-2.5 text-left text-xs hover:bg-hover-bg flex items-center gap-3 group transition-colors text-text-primary"
                       >
                         <DiscIcon size={12} className="text-accent-primary opacity-50 group-hover:opacity-100 shrink-0" />
-                        <span className="truncate text-[#6A6A64] group-hover:text-text-primary transition-colors">{af.name}</span>
+                        <span className="truncate text-text-secondary group-hover:text-text-primary transition-colors">{af.name}</span>
                         <PlayIcon size={10} className="ml-auto text-accent-primary opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                       </button>
                     ))}
@@ -380,7 +433,7 @@ export default function FileViewer({
                 <h3 className="text-2xl font-serif mb-2 italic">{currentFile.name}</h3>
                 <p className="text-xs opacity-50 mb-12 font-mono">Compatible with Google Meet Tab Sharing</p>
 
-                <div className="w-full max-w-md bg-black/5 p-6 border border-black/10 rounded-2xl">
+                <div className="w-full max-w-md bg-bg-secondary p-6 border border-border-primary rounded-2xl">
                   <audio controls className="w-full" autoPlay>
                     <source src={currentFile.content} type={currentFile.mimeType} />
                   </audio>
@@ -415,11 +468,11 @@ export default function FileViewer({
             )}
 
             {currentFile.type === 'image' && (
-              <div className="w-full h-full flex items-center justify-center p-8 bg-white">
+              <div className="w-full h-full flex items-center justify-center p-8 bg-bg-secondary">
                 <img
                   src={currentFile.content}
                   alt={currentFile.name}
-                  className="max-w-full max-h-full object-contain shadow-2xl bg-white p-2 border border-[#E5E5E1]"
+                  className="max-w-full max-h-full object-contain shadow-2xl bg-bg-primary p-2 border border-border-primary"
                   referrerPolicy="no-referrer"
                 />
               </div>

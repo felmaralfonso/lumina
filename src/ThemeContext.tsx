@@ -22,9 +22,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const colors = themeConfig.colors;
     
     document.documentElement.style.setProperty('--bg-primary', colors.bg);
+    document.documentElement.style.setProperty('--bg-secondary', colors.bgSecondary);
     document.documentElement.style.setProperty('--text-primary', colors.text);
+    document.documentElement.style.setProperty('--text-secondary', colors.textSecondary);
     document.documentElement.style.setProperty('--accent-primary', colors.accent);
+    document.documentElement.style.setProperty('--accent-hover', colors.accentHover);
     document.documentElement.style.setProperty('--sidebar-bg', colors.sidebar);
+    document.documentElement.style.setProperty('--border-primary', colors.borderPrimary);
+    document.documentElement.style.setProperty('--border-secondary', colors.borderSecondary);
+    document.documentElement.style.setProperty('--hover-bg', colors.hoverBg);
 
     // Sync system theme color (browser title bar, etc.)
     let metaTheme = document.querySelector('meta[name="theme-color"]');

@@ -1,4 +1,4 @@
-import { HardDriveIcon, ShieldAlertIcon, InfoIcon, RefreshCwIcon, SaveIcon, CheckIcon, BookOpenIcon, PlusIcon, FileTextIcon, MusicIcon, PlayIcon, Trash2Icon, FolderIcon, LayoutDashboardIcon, LockIcon, UnlockIcon, RouteIcon, StickyNoteIcon } from 'lucide-react';
+import { HardDriveIcon, ShieldAlertIcon, InfoIcon, RefreshCwIcon, SaveIcon, CheckIcon, BookOpenIcon, PlusIcon, FileTextIcon, MusicIcon, PlayIcon, Trash2Icon, FolderIcon, LayoutDashboardIcon, LockIcon, UnlockIcon, RouteIcon, StickyNoteIcon, TimerIcon } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useState } from 'react';
 import { driver } from 'driver.js';
@@ -26,6 +26,23 @@ export default function SettingsManager({
   onStartTour 
 }: SettingsManagerProps) {
   const [testResult, setTestResult] = useState<'pending' | 'success' | 'failed' | 'incognito' | null>(null);
+  const [timerVolume, setTimerVolume] = useState(() => {
+    const saved = localStorage.getItem('lumina_timer_volume');
+    return saved ? parseFloat(saved) : 0.4;
+  });
+
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseFloat(e.target.value);
+    setTimerVolume(val);
+    localStorage.setItem('lumina_timer_volume', val.toString());
+    window.dispatchEvent(new CustomEvent('lumina-timer-volume-changed', { detail: val }));
+  };
+
+  const playTestAlarm = () => {
+    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/995/995-preview.mp3');
+    audio.volume = timerVolume;
+    audio.play().catch(e => console.error("Test audio playback blocked", e));
+  };
 
   const formatSize = (bytes: number) => {
     if (bytes < 1024) return bytes + ' B';
@@ -75,20 +92,20 @@ export default function SettingsManager({
     <div className="flex-1 w-full h-full overflow-auto">
       <div className="p-12 max-w-5xl mx-auto pb-32">
         <header className="mb-12">
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#9A9A96] mb-4">Instructor Administration</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-text-secondary mb-4">Instructor Administration</p>
           <h1 className="text-5xl font-serif tracking-tight">Settings & Help.</h1>
-          <p className="text-[#6A6A64] text-lg mt-4 italic font-serif">Manage lesson storage, verify system integrity, and learn how to teach with Lumina.</p>
+          <p className="text-text-secondary text-lg mt-4 italic font-serif">Manage lesson storage, verify system integrity, and learn how to teach with Lumina.</p>
         </header>
 
         {/* Interactive Tour Section */}
         <section className="mb-20">
-          <div className="bg-white border border-[#E5E5E1] shadow-sm rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="bg-bg-secondary border border-border-primary shadow-sm rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-8">
             <div>
               <h2 className="text-xl font-serif text-accent-primary mb-2 flex items-center gap-2">
                 <RouteIcon size={20} />
                 Interactive Workspace Tour
               </h2>
-              <p className="text-sm text-[#6A6A64] max-w-xl leading-relaxed">
+              <p className="text-sm text-text-secondary max-w-xl leading-relaxed">
                 New to Lumina? Take a quick guided tour to learn where everything is and how to get the most out of your offline study hub.
               </p>
             </div>
@@ -102,87 +119,87 @@ export default function SettingsManager({
         </section>
 
         <section className="mb-12">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-[#9A9A96] mb-6 flex items-center gap-2">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-6 flex items-center gap-2">
             <BookOpenIcon size={14} /> How to Teach with Lumina
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white p-6 border border-[#E5E5E1]">
+            <div className="bg-bg-secondary p-6 border border-border-primary">
               <h3 className="font-serif text-lg mb-3 text-text-primary flex items-center gap-2">
                 <FolderIcon size={18} className="text-accent-primary" /> 1. Lesson Library
               </h3>
-              <p className="text-sm text-[#6A6A64] leading-relaxed mb-4">
+              <p className="text-sm text-text-secondary leading-relaxed mb-4">
                 Lumina is your digital curriculum binder. Use the <strong>My Documents</strong> tab to organize your lesson plans, handouts, and teaching resources.
               </p>
-              <ul className="text-xs text-[#6A6A64] space-y-2 list-disc pl-5">
+              <ul className="text-xs text-text-secondary space-y-2 list-disc pl-5">
                 <li>Create subject-specific folders for quick access during live calls.</li>
                 <li>Upload PDFs, lesson slides, and reference materials.</li>
                 <li>Drag-and-drop support for rapid curriculum building.</li>
               </ul>
             </div>
 
-            <div className="bg-white p-6 border border-[#E5E5E1]">
+            <div className="bg-bg-secondary p-6 border border-border-primary">
               <h3 className="font-serif text-lg mb-3 text-text-primary flex items-center gap-2">
                 <FileTextIcon size={18} className="text-accent-primary" /> 2. Live Document Annotation
               </h3>
-              <p className="text-sm text-[#6A6A64] leading-relaxed mb-4">
+              <p className="text-sm text-text-secondary leading-relaxed mb-4">
                 Open any PDF to enter <strong>Presentation Mode</strong>. Annotate directly on the document while screensharing to highlight key concepts.
               </p>
-              <ul className="text-xs text-[#6A6A64] space-y-2 list-disc pl-5">
+              <ul className="text-xs text-text-secondary space-y-2 list-disc pl-5">
                 <li>Use the top toolbar for various pens and highlighters.</li>
                 <li>Hover the <strong>left edge</strong> to switch between related documents instantly.</li>
                 <li>Annotations are saved per-file for future reference.</li>
               </ul>
             </div>
 
-            <div className="bg-white p-6 border border-[#E5E5E1]">
+            <div className="bg-bg-secondary p-6 border border-border-primary">
               <h3 className="font-serif text-lg mb-3 text-text-primary flex items-center gap-2">
                 <MusicIcon size={18} className="text-accent-primary" /> 3. Audio & Ambiance
               </h3>
-              <p className="text-sm text-[#6A6A64] leading-relaxed mb-4">
+              <p className="text-sm text-text-secondary leading-relaxed mb-4">
                 Set the classroom mood by uploading background ambiance or lecture recordings.
               </p>
-              <ul className="text-xs text-[#6A6A64] space-y-2 list-disc pl-5">
+              <ul className="text-xs text-text-secondary space-y-2 list-disc pl-5">
                 <li>The persistent global player stays active across all documents.</li>
                 <li>Access audio files quickly from the Document Viewer's left sidebar.</li>
               </ul>
             </div>
 
-            <div className="bg-white p-6 border border-[#E5E5E1]">
+            <div className="bg-bg-secondary p-6 border border-border-primary">
               <h3 className="font-serif text-lg mb-3 text-text-primary flex items-center gap-2">
                 <LayoutDashboardIcon size={18} className="text-accent-primary" /> 4. The Teaching Board
               </h3>
-              <p className="text-sm text-[#6A6A64] leading-relaxed mb-4">
+              <p className="text-sm text-text-secondary leading-relaxed mb-4">
                 A professional blackboard and scratchpad for worked examples and real-time notes.
               </p>
-              <ul className="text-xs text-[#6A6A64] space-y-2 list-disc pl-5">
+              <ul className="text-xs text-text-secondary space-y-2 list-disc pl-5">
                 <li>Hover the <strong>right edge</strong> to reveal the tool panel.</li>
                 <li>Pull out the Teaching Board alongside any PDF for side-by-side instruction.</li>
                 <li>Write math problems or lecture summaries in real-time.</li>
               </ul>
             </div>
 
-            <div className="bg-white p-6 border border-[#E5E5E1]">
+            <div className="bg-bg-secondary p-6 border border-border-primary">
               <h3 className="font-serif text-lg mb-3 text-text-primary flex items-center gap-2">
                 <StickyNoteIcon size={18} className="text-accent-primary" /> 5. Instructor Journal
               </h3>
-              <p className="text-sm text-[#6A6A64] leading-relaxed mb-4">
+              <p className="text-sm text-text-secondary leading-relaxed mb-4">
                 Use the <strong>Global Notepad</strong> (Journal Icon on the right) for private lecture notes, class reflections, or administrative reminders.
               </p>
-              <ul className="text-xs text-[#6A6A64] space-y-2 list-disc pl-5">
+              <ul className="text-xs text-text-secondary space-y-2 list-disc pl-5">
                 <li>Accessible from any screen without switching tabs.</li>
                 <li>Persistent date-based entries for tracking curriculum progress.</li>
               </ul>
             </div>
 
-            <div className="bg-white p-6 border border-[#E5E5E1]">
+            <div className="bg-bg-secondary p-6 border border-border-primary">
               <h3 className="font-serif text-lg mb-3 text-text-primary flex items-center gap-2">
                 <PlusIcon size={18} className="text-accent-primary" /> 6. Student Progress Tracking
               </h3>
-              <p className="text-sm text-[#6A6A64] leading-relaxed mb-4">
+              <p className="text-sm text-text-secondary leading-relaxed mb-4">
                 Keep specific notes for each student or group within their respective folders.
               </p>
-              <ul className="text-xs text-[#6A6A64] space-y-2 list-disc pl-5">
+              <ul className="text-xs text-text-secondary space-y-2 list-disc pl-5">
                 <li>Inside any folder, click the <span className="font-bold">Notes</span> button to toggle the student progress panel.</li>
                 <li>Ideal for keeping track of individual learning goals or grading feedback.</li>
               </ul>
@@ -191,17 +208,17 @@ export default function SettingsManager({
         </section>
 
         <section className="mb-12">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-[#9A9A96] mb-6 flex items-center gap-2">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-6 flex items-center gap-2">
             <LockIcon size={14} /> Presentation Mode (Workspace Lock)
           </h2>
-          <div className="bg-white p-6 border border-[#E5E5E1] w-full">
-            <div className="mb-6 p-4 bg-[#F9F9F7] border border-[#E5E5E1] rounded-lg">
-              <label className="block text-[10px] font-bold uppercase tracking-widest text-[#9A9A96] mb-3">
+          <div className="bg-bg-secondary p-6 border border-border-primary w-full">
+            <div className="mb-6 p-4 bg-bg-primary border border-border-primary rounded-lg">
+              <label className="block text-[10px] font-bold uppercase tracking-widest text-text-secondary mb-3">
                 Current Activation Key
               </label>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-text-primary bg-[#E5E5E1] px-2 py-1 rounded">Alt +</span>
+                  <span className="text-sm font-bold text-text-primary bg-border-primary px-2 py-1 rounded">Alt +</span>
                   <select 
                     value={lockKey}
                     onChange={(e) => {
@@ -209,7 +226,7 @@ export default function SettingsManager({
                       setLockKey(newKey);
                       localStorage.setItem('lumina_lock_key', newKey);
                     }}
-                    className="bg-white border border-[#E5E5E1] px-3 py-1.5 text-sm font-bold rounded outline-none focus:border-accent-primary transition-all"
+                    className="bg-bg-secondary text-text-primary border border-border-primary px-3 py-1.5 text-sm font-bold rounded outline-none focus:border-accent-primary transition-all"
                   >
                     <option value="s">S (Standard)</option>
                     <option value="l">L (Lock)</option>
@@ -217,20 +234,20 @@ export default function SettingsManager({
                     <option value="z">Z</option>
                   </select>
                 </div>
-                <p className="text-[11px] text-[#6A6A64]">
+                <p className="text-[11px] text-text-secondary">
                   We use the Alt/Option modifier to prevent accidental triggers while lecturing or screensharing.
                 </p>
               </div>
             </div>
 
-            <p className="text-sm text-[#6A6A64] leading-relaxed mb-6">
-              Pressing <kbd className="px-2 py-1 bg-[#F5F5F3] border border-[#E5E5E1] rounded text-xs font-mono font-bold text-text-primary mx-1">Alt + {lockKey.toUpperCase()}</kbd> enters <strong>Presentation Mode</strong>, locking all sidebars to prevent accidental interruptions while you are teaching.
+            <p className="text-sm text-text-secondary leading-relaxed mb-6">
+              Pressing <kbd className="px-2 py-1 bg-hover-bg border border-border-primary rounded text-xs font-mono font-bold text-text-primary mx-1">Alt + {lockKey.toUpperCase()}</kbd> enters <strong>Presentation Mode</strong>, locking all sidebars to prevent accidental interruptions while you are teaching.
             </p>
 
             <div className="space-y-3">
               <label className={cn(
                 "flex items-center gap-4 p-4 border transition-all cursor-pointer rounded-lg",
-                lockMode === 'hold' ? "border-accent-primary bg-accent-primary/5" : "border-[#E5E5E1] hover:bg-[#F9F9F7]"
+                lockMode === 'hold' ? "border-accent-primary bg-accent-primary/5" : "border-border-primary hover:bg-hover-bg"
               )}>
                 <input 
                   type="radio" 
@@ -244,13 +261,13 @@ export default function SettingsManager({
                 />
                 <div>
                   <span className="block text-sm font-bold text-text-primary mb-1">Hold to Lock</span>
-                  <span className="block text-[11px] text-[#6A6A64]">Lock sidebars only while holding Alt + {lockKey.toUpperCase()}. Ideal for brief focus moments.</span>
+                  <span className="block text-[11px] text-text-secondary">Lock sidebars only while holding Alt + {lockKey.toUpperCase()}. Ideal for brief focus moments.</span>
                 </div>
               </label>
 
               <label className={cn(
                 "flex items-center gap-4 p-4 border transition-all cursor-pointer rounded-lg",
-                lockMode === 'toggle' ? "border-accent-primary bg-accent-primary/5" : "border-[#E5E5E1] hover:bg-[#F9F9F7]"
+                lockMode === 'toggle' ? "border-accent-primary bg-accent-primary/5" : "border-border-primary hover:bg-hover-bg"
               )}>
                 <input 
                   type="radio" 
@@ -264,36 +281,73 @@ export default function SettingsManager({
                 />
                 <div>
                   <span className="block text-sm font-bold text-text-primary mb-1">Toggle to Lock</span>
-                  <span className="block text-[11px] text-[#6A6A64]">Press Alt once to lock, and again to unlock. Best for long-form lectures or live demos.</span>
+                  <span className="block text-[11px] text-text-secondary">Press Alt once to lock, and again to unlock. Best for long-form lectures or live demos.</span>
                 </div>
               </label>
             </div>
           </div>
         </section>
 
+        <section className="mb-12">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-6 flex items-center gap-2">
+            <TimerIcon size={14} /> Focus Timer Settings
+          </h2>
+          <div className="bg-bg-secondary p-6 border border-border-primary w-full">
+            <div className="mb-6 p-4 bg-bg-primary border border-border-primary rounded-lg">
+              <label className="block text-[10px] font-bold uppercase tracking-widest text-text-secondary mb-3">
+                Timer Alarm Volume
+              </label>
+              <div className="flex items-center gap-6">
+                <div className="flex-1 flex items-center gap-3">
+                  <span className="text-xs opacity-50">0%</span>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.05"
+                    value={timerVolume}
+                    onChange={handleVolumeChange}
+                    className="flex-1 accent-accent-primary h-1 bg-border-primary rounded-lg appearance-none cursor-pointer"
+                  />
+                  <span className="text-xs font-bold w-12 text-right">{Math.round(timerVolume * 100)}%</span>
+                </div>
+                <button
+                  onClick={playTestAlarm}
+                  className="px-4 py-2 border border-border-primary hover:bg-hover-bg text-[10px] font-bold uppercase tracking-widest rounded transition-colors shrink-0"
+                >
+                  Test Alarm
+                </button>
+              </div>
+            </div>
+            <p className="text-sm text-text-secondary leading-relaxed">
+              Adjust the volume of the sound that plays when the Focus Timer runs out. The volume setting is saved automatically.
+            </p>
+          </div>
+        </section>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           <section>
-            <h2 className="text-xs font-bold uppercase tracking-widest text-[#9A9A96] mb-8 flex items-center gap-2">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-8 flex items-center gap-2">
               <HardDriveIcon size={14} /> Storage Diagnosis
             </h2>
-            <div className="bg-white border border-[#E5E5E1] p-8 space-y-6 shadow-sm">
+            <div className="bg-bg-secondary border border-border-primary p-8 space-y-6 shadow-sm">
               <div>
                 <div className="flex justify-between text-xs mb-2">
-                  <span className="text-[#6A6A64]">Browser Storage Used</span>
+                  <span className="text-text-secondary">Browser Storage Used</span>
                   <span className="font-bold">{quotaInfo ? formatSize(quotaInfo.used) : 'Calculating...'}</span>
                 </div>
-                <div className="w-full h-1.5 bg-[#F0F0EE] rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-hover-bg rounded-full overflow-hidden">
                   <div 
                     className={cn("h-full transition-all duration-1000", usedPercentage > 80 ? "bg-red-500" : "bg-accent-primary")}
                     style={{ width: `${Math.max(2, usedPercentage)}%` }} 
                   />
                 </div>
-                <p className="text-[10px] text-[#9A9A96] mt-2 italic">
+                <p className="text-[10px] text-text-secondary mt-2 italic">
                   Total available: {quotaInfo ? formatSize(quotaInfo.total) : '...'}
                 </p>
               </div>
 
-              <div className="flex items-center gap-3 p-4 bg-[#F9F9F7] border border-[#E5E5E1]">
+              <div className="flex items-center gap-3 p-4 bg-bg-primary border border-border-primary">
                 {isSaving ? (
                   <RefreshCwIcon size={16} className="text-accent-primary animate-spin" />
                 ) : (
@@ -301,16 +355,16 @@ export default function SettingsManager({
                 )}
                 <div>
                   <p className="text-xs font-bold">{isSaving ? 'Syncing to disk...' : 'All data synchronized'}</p>
-                  <p className="text-[10px] text-[#9A9A96]">Your files are safely stored in your browser.</p>
+                  <p className="text-[10px] text-text-secondary">Your files are safely stored in your browser.</p>
                 </div>
               </div>
 
               {storageError && (
-                <div className="p-4 bg-red-50 border border-red-100 flex items-start gap-3">
+                <div className="p-4 bg-red-500/10 border border-red-500/20 flex items-start gap-3">
                   <ShieldAlertIcon size={16} className="text-red-500 shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs font-bold text-red-700">Storage Warning</p>
-                    <p className="text-[10px] text-red-600 leading-relaxed">{storageError}</p>
+                    <p className="text-xs font-bold text-red-500">Storage Warning</p>
+                    <p className="text-[10px] text-red-500/80 leading-relaxed">{storageError}</p>
                   </div>
                 </div>
               )}
@@ -318,11 +372,11 @@ export default function SettingsManager({
           </section>
 
           <section>
-            <h2 className="text-xs font-bold uppercase tracking-widest text-[#9A9A96] mb-8 flex items-center gap-2">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-8 flex items-center gap-2">
               <ShieldAlertIcon size={14} /> Privacy & Persistence
             </h2>
-            <div className="bg-white border border-[#E5E5E1] p-8 shadow-sm">
-              <p className="text-xs text-[#6A6A64] leading-relaxed mb-6">
+            <div className="bg-bg-secondary border border-border-primary p-8 shadow-sm">
+              <p className="text-xs text-text-secondary leading-relaxed mb-6">
                 If your data is being removed after closing the tab, you might be in <span className="font-bold text-text-primary">Incognito Mode</span> or have <span className="font-bold text-text-primary">"Clear site data on exit"</span> enabled in your browser settings.
               </p>
               
@@ -335,7 +389,7 @@ export default function SettingsManager({
               </button>
 
               {testResult === 'success' && (
-                <div className="mt-4 p-4 bg-green-50 border border-green-100 flex items-start gap-3">
+                <div className="mt-4 p-4 bg-green-500/10 border border-green-500/20 flex items-start gap-3">
                   <CheckIcon size={16} className="text-green-600 shrink-0 mt-0.5" />
                   <p className="text-[10px] text-green-700 font-medium leading-relaxed">
                     Test Passed. Your browser is correctly retaining data. If you still lose files, make sure you aren't using "Incognito Mode".
@@ -344,7 +398,7 @@ export default function SettingsManager({
               )}
 
               {testResult === 'incognito' && (
-                <div className="mt-4 p-4 bg-amber-50 border border-amber-100 flex items-start gap-3">
+                <div className="mt-4 p-4 bg-amber-500/10 border border-amber-500/20 flex items-start gap-3">
                   <ShieldAlertIcon size={16} className="text-amber-500 shrink-0 mt-0.5" />
                   <p className="text-[10px] text-amber-800 font-medium leading-relaxed">
                     <strong className="block mb-1 uppercase tracking-wider">Incognito Mode Detected</strong>
@@ -354,15 +408,15 @@ export default function SettingsManager({
               )}
 
               {testResult === 'failed' && (
-                <div className="mt-4 p-4 bg-red-50 border border-red-100 flex items-start gap-3">
+                <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 flex items-start gap-3">
                   <ShieldAlertIcon size={16} className="text-red-500 shrink-0 mt-0.5" />
-                  <p className="text-[10px] text-red-700 font-medium leading-relaxed">
+                  <p className="text-[10px] text-red-500 font-medium leading-relaxed">
                     Test Failed. Your browser is blocking storage or clearing it. Check your "Privacy & Security" settings.
                   </p>
                 </div>
               )}
 
-              <div className="mt-8 flex items-start gap-3 text-[#9A9A96] p-4 bg-[#F9F9F7] border border-[#E5E5E1]">
+              <div className="mt-8 flex items-start gap-3 text-text-secondary p-4 bg-bg-primary border border-border-primary">
                 <InfoIcon size={14} className="shrink-0 mt-0.5" />
                 <p className="text-[10px] leading-relaxed">
                   Lumina runs entirely locally. We use <strong>IndexedDB</strong> to store your files in your browser. No data is sent to the cloud.

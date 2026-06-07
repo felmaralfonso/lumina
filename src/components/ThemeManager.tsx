@@ -29,17 +29,36 @@ export default function ThemeManager() {
                 key={themeKey}
                 onClick={() => setTheme(themeKey)}
                 className={cn(
-                  "group relative overflow-hidden transition-all border p-1 rounded-2xl",
+                  "group relative overflow-hidden transition-all border p-1 rounded-2xl text-left",
                   isActive 
-                    ? "border-accent-primary ring-4 ring-accent-primary/10 shadow-2xl" 
-                    : "border-[#E5E5E1] hover:border-accent-primary/50 hover:shadow-lg"
+                    ? "ring-4 shadow-2xl" 
+                    : "hover:shadow-lg"
                 )}
-                style={{ backgroundColor: t.colors.bg }}
+                style={{ 
+                  backgroundColor: t.colors.bg,
+                  borderColor: isActive ? t.colors.accent : t.colors.borderPrimary,
+                  boxShadow: isActive ? `0 0 0 4px ${t.colors.accent}1a, var(--tw-shadow)` : undefined
+                }}
               >
                 {/* Mock UI Preview */}
-                <div className="aspect-[16/10] w-full rounded-t-xl overflow-hidden flex border-b border-black/5">
-                  <div className="w-12 h-full border-r border-black/5" style={{ backgroundColor: t.colors.sidebar }} />
-                  <div className="flex-1 p-4 space-y-3">
+                <div 
+                  className="aspect-[16/10] w-full rounded-t-xl overflow-hidden flex border-b" 
+                  style={{ 
+                    borderColor: t.colors.borderPrimary,
+                    backgroundColor: t.colors.bg 
+                  }}
+                >
+                  <div 
+                    className="w-12 h-full border-r" 
+                    style={{ 
+                      backgroundColor: t.colors.sidebar, 
+                      borderColor: t.colors.borderPrimary 
+                    }} 
+                  />
+                  <div 
+                    className="flex-1 p-4 space-y-3" 
+                    style={{ backgroundColor: t.colors.bgSecondary }}
+                  >
                     <div className="h-2 w-1/2 rounded-full opacity-20" style={{ backgroundColor: t.colors.text }} />
                     <div className="grid grid-cols-2 gap-2">
                       <div className="h-12 rounded-lg opacity-10" style={{ backgroundColor: t.colors.text }} />
@@ -49,9 +68,9 @@ export default function ThemeManager() {
                   </div>
                 </div>
 
-                <div className="p-6 flex items-center justify-between">
+                <div className="p-6 flex items-center justify-between" style={{ backgroundColor: t.colors.bg }}>
                   <div className="flex flex-col gap-1">
-                    <h3 className="font-serif text-lg leading-none" style={{ color: t.colors.text }}>{t.name}</h3>
+                    <h3 className="font-serif text-lg leading-none animate-fade-in" style={{ color: t.colors.text }}>{t.name}</h3>
                     <div className="flex gap-1 items-center mt-2">
                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: t.colors.accent }} />
                        <div className="w-3 h-3 rounded-full opacity-50" style={{ backgroundColor: t.colors.text }} />
@@ -59,7 +78,13 @@ export default function ThemeManager() {
                     </div>
                   </div>
                   {isActive && (
-                    <div className="bg-accent-primary text-white p-1.5 rounded-full shadow-lg">
+                    <div 
+                      className="p-1.5 rounded-full shadow-lg transition-transform scale-100 animate-scale-up" 
+                      style={{ 
+                        backgroundColor: t.colors.accent, 
+                        color: t.colors.bg 
+                      }}
+                    >
                       <CheckIcon size={14} />
                     </div>
                   )}

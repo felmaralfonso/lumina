@@ -100,8 +100,8 @@ export default function GlobalAudio({ activeAudio, onClearAudio, allFiles, onSel
       <button 
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "w-12 h-12 flex items-center justify-center rounded-l-2xl transition-all relative",
-          activeAudio ? "bg-accent-primary text-white" : "bg-white border border-[#E5E5E1] border-r-0 text-[#9A9A96]"
+          "w-12 h-12 flex items-center justify-center rounded-l-2xl transition-all relative border border-border-primary border-r-0",
+          activeAudio ? "bg-accent-primary text-white border-accent-primary" : "bg-bg-secondary text-text-secondary hover:bg-hover-bg"
         )}
       >
         <motion.div
@@ -124,16 +124,16 @@ export default function GlobalAudio({ activeAudio, onClearAudio, allFiles, onSel
             initial={{ width: 0, opacity: 0 }}
             animate={{ width: 300, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
-            className="h-[380px] bg-white border border-[#E5E5E1] flex flex-col p-6 rounded-l-2xl overflow-hidden"
+            className="h-[380px] bg-bg-secondary text-text-primary border border-border-primary flex flex-col p-6 rounded-l-2xl overflow-hidden"
           >
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
-                <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#9A9A96]">Audio Control</h3>
+                <h3 className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">Audio Control</h3>
                 <button 
                   onClick={() => setShowLibrary(!showLibrary)}
                   className={cn(
                     "p-1 rounded transition-colors",
-                    showLibrary ? "bg-accent-primary text-white" : "hover:bg-[#F9F9F7] text-[#BCBCB9]"
+                    showLibrary ? "bg-accent-primary text-white" : "hover:bg-hover-bg text-text-secondary"
                   )}
                 >
                   <ListIcon size={12} />
@@ -149,7 +149,7 @@ export default function GlobalAudio({ activeAudio, onClearAudio, allFiles, onSel
             <div className="flex-1 flex flex-col items-center justify-center overflow-hidden">
               {showLibrary ? (
                 <div className="w-full h-full flex flex-col">
-                  <p className="text-[9px] font-bold uppercase tracking-widest text-[#BCBCB9] mb-3">Audio Library</p>
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-text-secondary mb-3">Audio Library</p>
                   <div className="flex-1 overflow-auto flex flex-col gap-1 pr-2">
                     {audioFiles.map(file => (
                       <button
@@ -160,7 +160,7 @@ export default function GlobalAudio({ activeAudio, onClearAudio, allFiles, onSel
                         }}
                         className={cn(
                           "w-full text-left p-2 rounded-lg text-xs flex items-center gap-3 group transition-all",
-                          activeAudio?.id === file.id ? "bg-accent-primary/5 text-accent-primary" : "hover:bg-[#F9F9F7] text-[#6A6A64]"
+                          activeAudio?.id === file.id ? "bg-accent-primary/10 text-accent-primary" : "hover:bg-hover-bg text-text-secondary hover:text-text-primary"
                         )}
                       >
                          <DiscIcon size={12} className={cn(activeAudio?.id === file.id && isPlaying ? "animate-spin" : "")} />
@@ -180,16 +180,16 @@ export default function GlobalAudio({ activeAudio, onClearAudio, allFiles, onSel
                       </button>
                     ))}
                     {audioFiles.length === 0 && (
-                       <p className="text-[10px] italic text-[#BCBCB9] text-center mt-8">No audio files found</p>
+                       <p className="text-[10px] italic text-text-secondary text-center mt-8">No audio files found</p>
                     )}
                   </div>
                 </div>
               ) : !activeAudio ? (
                 <div className="text-center">
-                  <div className="w-16 h-16 bg-[#F9F9F7] rounded-full flex items-center justify-center text-[#BCBCB9] mx-auto mb-4">
+                  <div className="w-16 h-16 bg-bg-primary rounded-full flex items-center justify-center text-text-secondary mx-auto mb-4 border border-border-primary/50">
                     <MusicIcon size={24} />
                   </div>
-                  <p className="text-xs text-[#9A9A96] font-serif italic">No audio selected</p>
+                  <p className="text-xs text-text-secondary font-serif italic">No audio selected</p>
                   <button 
                     onClick={() => setShowLibrary(true)}
                     className="text-[10px] mt-4 text-accent-primary uppercase font-bold tracking-widest hover:opacity-70"
@@ -223,9 +223,9 @@ export default function GlobalAudio({ activeAudio, onClearAudio, allFiles, onSel
                       max={duration || 100} 
                       value={currentTime} 
                       onChange={handleSeek}
-                      className="w-full h-1 bg-[#E5E5E1] rounded-lg appearance-none cursor-pointer accent-accent-primary"
+                      className="w-full h-1 bg-border-primary rounded-lg appearance-none cursor-pointer accent-accent-primary"
                     />
-                    <div className="flex justify-between text-[10px] text-[#9A9A96] mt-1 font-mono">
+                    <div className="flex justify-between text-[10px] text-text-secondary mt-1 font-mono">
                       <span>{formatTime(currentTime)}</span>
                       <span>{formatTime(duration)}</span>
                     </div>
@@ -234,7 +234,7 @@ export default function GlobalAudio({ activeAudio, onClearAudio, allFiles, onSel
                   <div className="flex items-center gap-3">
                     <button 
                       onClick={handleSpeedChange}
-                      className="text-[10px] font-bold text-[#9A9A96] hover:text-text-primary px-2 py-1 bg-[#F9F9F7] rounded w-10 text-center transition-colors"
+                      className="text-[10px] font-bold text-text-secondary hover:text-text-primary px-2 py-1 bg-hover-bg rounded w-10 text-center transition-colors border border-border-primary/50"
                       title="Playback Speed"
                     >
                       {playbackRate}x
@@ -242,7 +242,7 @@ export default function GlobalAudio({ activeAudio, onClearAudio, allFiles, onSel
 
                     <button 
                       onClick={handleRewind}
-                      className="text-[10px] font-bold text-[#9A9A96] hover:text-text-primary px-2 py-1 bg-[#F9F9F7] rounded w-10 text-center transition-colors flex items-center justify-center gap-0.5"
+                      className="text-[10px] font-bold text-text-secondary hover:text-text-primary px-2 py-1 bg-hover-bg rounded w-10 text-center transition-colors flex items-center justify-center gap-0.5 border border-border-primary/50"
                       title="Rewind 10 Seconds"
                     >
                       -10s
@@ -250,7 +250,7 @@ export default function GlobalAudio({ activeAudio, onClearAudio, allFiles, onSel
 
                     <button 
                       onClick={togglePlay}
-                      className="w-12 h-12 bg-text-primary text-white rounded-full flex items-center justify-center hover:opacity-90 transition-all shadow-lg"
+                      className="w-12 h-12 bg-text-primary text-bg-primary rounded-full flex items-center justify-center hover:opacity-90 transition-all shadow-lg"
                     >
                       {isPlaying ? <PauseIcon size={20} fill="currentColor" /> : <PlayIcon size={20} fill="currentColor" className="ml-1" />}
                     </button>
@@ -262,7 +262,7 @@ export default function GlobalAudio({ activeAudio, onClearAudio, allFiles, onSel
               )}
             </div>
             
-            <div className="mt-6 flex items-center justify-between text-[8px] font-mono text-[#BCBCB9] opacity-40 uppercase tracking-widest">
+            <div className="mt-6 flex items-center justify-between text-[8px] font-mono text-text-secondary opacity-40 uppercase tracking-widest">
               <span>Streaming Mode</span>
               <span>{activeAudio ? 'Live Node' : 'Idle'}</span>
             </div>

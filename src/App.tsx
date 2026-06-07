@@ -48,6 +48,45 @@ function Dashboard() {
     storageError 
   } = useFileSystem();
 
+  // Global Focus Timer State
+  const [timeLeft, setTimeLeft] = useState(() => {
+    const saved = localStorage.getItem('lumina_timer_left');
+    return saved ? parseInt(saved, 10) : 1500;
+  });
+  const [isRunning, setIsRunning] = useState(() => {
+    const saved = localStorage.getItem('lumina_timer_running');
+    return saved === 'true';
+  });
+  const [initialTime, setInitialTime] = useState(() => {
+    const saved = localStorage.getItem('lumina_timer_initial');
+    return saved ? parseInt(saved, 10) : 1500;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('lumina_timer_left', timeLeft.toString());
+    localStorage.setItem('lumina_timer_running', isRunning.toString());
+    localStorage.setItem('lumina_timer_initial', initialTime.toString());
+  }, [timeLeft, isRunning, initialTime]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    if (isRunning && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+    } else if (timeLeft === 0 && isRunning) {
+      setIsRunning(false);
+      const savedVolume = localStorage.getItem('lumina_timer_volume');
+      const volume = savedVolume ? parseFloat(savedVolume) : 0.4;
+      const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/995/995-preview.mp3');
+      audio.volume = volume;
+      audio.play().catch(e => console.error("Audio playback blocked", e));
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isRunning, timeLeft]);
+
   const [onboardingStep, setOnboardingStep] = useState(0);
 
   // Persist Lock Settings
@@ -527,19 +566,27 @@ function Dashboard() {
                   <button
                     onClick={() => setIsBlackboardOpen(!isBlackboardOpen)}
                     className={cn(
-                      "w-10 h-32 bg-white border border-[#E5E5E1] border-r-0 rounded-l-2xl flex flex-col items-center justify-center gap-2 transition-all hover:translate-x-[-4px] group",
-                      isBlackboardOpen ? "text-accent-primary" : "text-[#9A9A96]"
+                      "w-10 h-32 bg-bg-secondary border border-border-primary border-r-0 rounded-l-2xl flex flex-col items-center justify-center gap-2 transition-all hover:translate-x-[-4px] group",
+                      isBlackboardOpen ? "text-accent-primary" : "text-text-secondary"
                     )}
                   >
                     <div className="text-[10px] font-bold uppercase tracking-widest rotate-180 flex items-center gap-3 pointer-events-none" style={{ writingMode: 'vertical-rl' }}>
                       Study Board
-                      <FileTextIcon size={14} className={isBlackboardOpen ? "text-accent-primary" : "text-[#9A9A96]"} />
+                      <FileTextIcon size={14} className={isBlackboardOpen ? "text-accent-primary" : "text-text-secondary group-hover:text-text-primary"} />
                     </div>
                   </button>
                 </div>
 
-                <div id="tour-timer" className="pointer-events-auto">
-                  <GlobalTimer isEmbedded={true} />
+                 <div id="tour-timer" className="pointer-events-auto">
+                  <GlobalTimer
+                     isEmbedded={true}
+                     timeLeft={timeLeft}
+                     setTimeLeft={setTimeLeft}
+                     isRunning={isRunning}
+                     setIsRunning={setIsRunning}
+                     initialTime={initialTime}
+                     setInitialTime={setInitialTime}
+                   />
                 </div>
               </div>
             </div>
@@ -548,11 +595,22 @@ function Dashboard() {
       )}
       {/* Global Workspace Lock Indicator */}
       <div className={cn(
-        "fixed bottom-6 right-6 z-[1000] flex items-center justify-center w-10 h-10 bg-text-primary text-white rounded-full transition-all duration-300",
+        "fixed bottom-6 right-6 z-[1000] flex items-center justify-center w-10 h-10 bg-text-primary text-bg-primary rounded-full shadow-lg transition-all duration-300",
         isSidebarLocked ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
       )}>
         <LockIcon size={18} />
       </div>
+      {viewingFile && !(!isSidebarLocked && (isToolsHovered || isBlackboardOpen)) && (
+        <GlobalTimer
+          isEmbedded={false}
+          timeLeft={timeLeft}
+          setTimeLeft={setTimeLeft}
+          isRunning={isRunning}
+          setIsRunning={setIsRunning}
+          initialTime={initialTime}
+          setInitialTime={setInitialTime}
+        />
+      )}
     </div>
   );
 }

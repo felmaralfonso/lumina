@@ -32,7 +32,7 @@ export default function Blackboard({ isOpen, setIsOpen, width, setWidth, setIsRe
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="h-full bg-[#F5F5F3] flex flex-col pointer-events-auto border-l border-[#E5E5E1] relative"
+            className="h-full bg-bg-primary flex flex-col pointer-events-auto border-l border-border-primary relative"
             style={{ width }}
           >
             {/* Resize Handle */}
@@ -66,7 +66,8 @@ export default function Blackboard({ isOpen, setIsOpen, width, setWidth, setIsRe
       <style>{`
         [contenteditable]:empty:before {
           content: attr(placeholder);
-          color: #BCBCB9;
+          color: var(--text-secondary);
+          opacity: 0.5;
           font-style: italic;
         }
       `}</style>

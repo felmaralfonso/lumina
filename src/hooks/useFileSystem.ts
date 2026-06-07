@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { FileSystemState, Folder, HubFile } from '../types';
 import { INITIAL_FOLDERS } from '../constants';
 import localforage from 'localforage';
+import { safeRandomUUID } from '../lib/utils';
 
 const STORAGE_KEY = 'lumina_fs_v1';
 
@@ -55,7 +56,7 @@ export function useFileSystem() {
   }, [state, isLoaded]);
 
   const addFolder = (name: string, parentId: string | null, customId?: string) => {
-    const id = customId || crypto.randomUUID();
+    const id = customId || safeRandomUUID();
     const newFolder: Folder = {
       id,
       name,
@@ -69,7 +70,7 @@ export function useFileSystem() {
   const addFile = (file: Omit<HubFile, 'id' | 'createdAt' | 'annotations'> & { size?: number }) => {
     const newFile: HubFile & { size?: number } = {
       ...file,
-      id: crypto.randomUUID(),
+      id: safeRandomUUID(),
       createdAt: Date.now(),
       annotations: [],
     };

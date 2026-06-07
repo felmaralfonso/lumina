@@ -53,27 +53,27 @@ function GameChat({ connection, myName, opponentName }: { connection: GameConnec
   return (
     <div className="absolute bottom-6 right-6 z-[100] flex flex-col items-end">
       {isOpen && (
-        <div className="bg-white border border-black/10 rounded-2xl shadow-2xl w-80 mb-4 overflow-hidden flex flex-col h-96">
-          <div className="bg-black/5 p-3 flex justify-between items-center border-b border-black/5">
+        <div className="bg-bg-secondary text-text-primary border border-border-primary rounded-2xl shadow-2xl w-80 mb-4 overflow-hidden flex flex-col h-96">
+          <div className="bg-hover-bg/30 p-3 flex justify-between items-center border-b border-border-primary">
             <span className="text-xs font-bold uppercase tracking-widest opacity-60">Game Chat</span>
             <button onClick={() => setIsOpen(false)} className="opacity-50 hover:opacity-100">×</button>
           </div>
           <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-bg-primary">
             {messages.length === 0 && <p className="text-xs opacity-40 text-center italic mt-4">No messages yet. Say hi!</p>}
             {messages.map(m => (
-              <div key={m.id} className={cn("max-w-[80%] rounded-xl px-3 py-2 text-sm", m.isMe ? "bg-accent-primary text-white self-end ml-auto" : "bg-black/5 text-text-primary mr-auto")}>
+              <div key={m.id} className={cn("max-w-[80%] rounded-xl px-3 py-2 text-sm", m.isMe ? "bg-accent-primary text-white self-end ml-auto" : "bg-hover-bg/50 text-text-primary mr-auto")}>
                 {!m.isMe && <div className="text-[10px] font-bold opacity-50 mb-1">{m.senderName}</div>}
                 {m.text}
               </div>
             ))}
             <div ref={messagesEndRef} />
           </div>
-          <form onSubmit={sendMessage} className="p-3 bg-white border-t border-black/5 flex gap-2">
+          <form onSubmit={sendMessage} className="p-3 bg-bg-secondary border-t border-border-primary flex gap-2">
             <input 
               value={input} 
               onChange={e => setInput(e.target.value)} 
               placeholder="Type message..." 
-              className="flex-1 bg-black/5 rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-accent-primary"
+              className="flex-1 bg-bg-primary text-text-primary border border-border-primary/50 rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-accent-primary"
             />
             <button type="submit" className="bg-accent-primary text-white px-3 py-2 rounded-lg text-xs font-bold uppercase">Send</button>
           </form>
@@ -313,7 +313,7 @@ export default function Games() {
         </div>
         
         {username && !isEditingName && mode === 'menu' && (
-          <div className="bg-black/5 border border-black/10 rounded-xl p-4 flex flex-col items-end">
+          <div className="bg-bg-secondary border border-border-primary rounded-xl p-4 flex flex-col items-end">
             <p className="text-[10px] font-bold uppercase tracking-widest opacity-50 mb-1">Playing as</p>
             <div className="flex items-center gap-4">
               <span className="font-serif text-xl">{username}</span>
@@ -334,7 +334,7 @@ export default function Games() {
             key="username-setup"
             className="max-w-md mx-auto mt-20"
           >
-            <div className="bg-white p-8 rounded-3xl shadow-2xl border border-[#E5E5E1] text-center">
+            <div className="bg-bg-secondary p-8 rounded-3xl shadow-2xl border border-border-primary text-center">
               <h2 className="text-2xl font-serif mb-4">Choose your identity</h2>
               <p className="text-sm opacity-60 mb-8">This name will be visible to your opponents in the lobby and chat.</p>
               <form onSubmit={saveUsername} className="space-y-4">
@@ -343,14 +343,14 @@ export default function Games() {
                   placeholder="Enter username" 
                   value={tempUsername}
                   onChange={e => setTempUsername(e.target.value)}
-                  className="w-full bg-black/5 border border-black/10 focus:border-accent-primary rounded-xl p-4 outline-none transition-all text-center font-serif text-xl"
+                  className="w-full bg-bg-primary text-text-primary border border-border-primary focus:border-accent-primary rounded-xl p-4 outline-none transition-all text-center font-serif text-xl"
                   maxLength={16}
                   required
                 />
                 <button 
                   type="submit"
                   disabled={!tempUsername.trim()}
-                  className="w-full bg-text-primary text-white py-4 text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent-primary disabled:opacity-30 transition-all shadow-xl rounded-xl"
+                  className="w-full bg-text-primary text-bg-primary py-4 text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent-hover disabled:opacity-30 transition-all shadow-xl rounded-xl"
                 >
                   Continue
                 </button>
@@ -368,7 +368,7 @@ export default function Games() {
             className="space-y-12 pb-12"
           >
             {/* Global Lobby */}
-            <section className="bg-black/5 p-8 border border-black/10 rounded-2xl">
+            <section className="bg-bg-secondary p-8 border border-border-primary rounded-2xl">
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-accent-primary/10 rounded-full flex items-center justify-center">
@@ -386,7 +386,7 @@ export default function Games() {
               </div>
 
               {rooms.length === 0 ? (
-                <div className="py-12 text-center border-2 border-dashed border-black/5 rounded-xl">
+                <div className="py-12 text-center border-2 border-dashed border-border-primary/50 rounded-xl">
                   <p className="text-sm italic opacity-40">No active queues found. Why not host one?</p>
                 </div>
               ) : (
@@ -396,10 +396,10 @@ export default function Games() {
                       key={room.id}
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="bg-white p-4 rounded-xl shadow-sm border border-black/5 flex items-center justify-between group hover:border-accent-primary/30 transition-all"
+                      className="bg-bg-secondary p-4 rounded-xl shadow-sm border border-border-primary/50 flex items-center justify-between group hover:border-accent-primary/30 transition-all"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-black/5 rounded-lg flex items-center justify-center">
+                        <div className="w-8 h-8 bg-bg-primary rounded-lg flex items-center justify-center">
                           <Gamepad2Icon size={14} className="opacity-40" />
                         </div>
                         <div>
@@ -409,7 +409,7 @@ export default function Games() {
                       </div>
                       <button 
                         onClick={() => handleJoin(room.id)}
-                        className="px-4 py-2 bg-text-primary text-white text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-accent-primary transition-colors"
+                        className="px-4 py-2 bg-text-primary text-bg-primary text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-accent-hover transition-colors"
                       >
                         Join
                       </button>
@@ -421,10 +421,10 @@ export default function Games() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Host */}
-              <div className="bg-black/5 p-8 border border-black/10 rounded-2xl">
+              <div className="bg-bg-secondary p-8 border border-border-primary rounded-2xl">
                 <div className="flex items-center justify-between mb-8">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
+                    <div className="w-12 h-12 bg-bg-primary rounded-full flex items-center justify-center shadow-sm">
                       <UserPlusIcon size={20} className="text-accent-primary" />
                     </div>
                     <div>
@@ -432,7 +432,7 @@ export default function Games() {
                       <p className="text-[10px] font-bold uppercase tracking-widest opacity-50">Create Room</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl shadow-sm border border-black/5">
+                  <div className="flex items-center gap-2 bg-bg-primary px-3 py-2 rounded-xl shadow-sm border border-border-primary/50">
                     <span className="text-[10px] font-bold uppercase tracking-widest opacity-50">Private</span>
                     <button 
                       onClick={() => setIsPrivateLobby(!isPrivateLobby)}
@@ -444,18 +444,18 @@ export default function Games() {
                 </div>
                 <div className="space-y-4">
                   {(['tictactoe', 'connect4'] as GameType[]).map(g => (
-                    <button key={g} onClick={() => handleHost(g)} className="w-full flex items-center gap-4 p-4 bg-white rounded-xl hover:shadow-md transition-all group">
+                    <button key={g} onClick={() => handleHost(g)} className="w-full flex items-center gap-4 p-4 bg-bg-primary border border-border-primary/50 hover:border-border-primary rounded-xl hover:shadow-md transition-all group">
                       <Gamepad2Icon size={18} className="opacity-40 group-hover:text-accent-primary transition-colors" />
-                      <span className="font-medium">{gameLabel(g)}</span>
+                      <span className="font-medium text-text-primary">{gameLabel(g)}</span>
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* Join */}
-              <div className="bg-black/5 p-8 border border-black/10 rounded-2xl flex flex-col">
+              <div className="bg-bg-secondary p-8 border border-border-primary rounded-2xl flex flex-col">
                 <div className="flex items-center gap-4 mb-8">
-                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
+                  <div className="w-12 h-12 bg-bg-primary rounded-full flex items-center justify-center shadow-sm">
                     <UsersIcon size={20} className="text-accent-primary" />
                   </div>
                   <div>
@@ -469,14 +469,14 @@ export default function Games() {
                     placeholder="CODE" 
                     value={joinId}
                     onChange={e => setJoinId(e.target.value)}
-                    className="w-full bg-transparent border-b-2 border-black/10 focus:border-accent-primary rounded-none p-4 outline-none transition-all text-center text-4xl font-serif uppercase tracking-[0.2em] mb-8"
+                    className="w-full bg-transparent border-b-2 border-border-primary focus:border-accent-primary rounded-none p-4 outline-none transition-all text-center text-4xl font-serif uppercase tracking-[0.2em] mb-8 text-text-primary"
                     maxLength={4}
                   />
                   {error && <p className="text-red-500 text-xs font-bold uppercase tracking-widest text-center mb-4">{error}</p>}
                   <button 
                     onClick={() => handleJoin()}
                     disabled={joinId.length !== 4}
-                    className="w-full bg-text-primary text-white py-4 text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent-primary disabled:opacity-30 transition-all shadow-xl rounded-xl"
+                    className="w-full bg-text-primary text-bg-primary py-4 text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent-hover disabled:opacity-30 transition-all shadow-xl rounded-xl"
                   >
                     Connect
                   </button>
@@ -492,7 +492,7 @@ export default function Games() {
             animate={{ opacity: 1, scale: 1 }}
             className="flex flex-col items-center justify-center py-20"
           >
-            <div className="bg-white p-12 rounded-3xl shadow-2xl border border-[#E5E5E1] text-center relative overflow-hidden">
+            <div className="bg-bg-secondary p-12 rounded-3xl shadow-2xl border border-border-primary text-center relative overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-1 bg-accent-primary animate-pulse" />
               <p className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-50 mb-8">
                 {isPrivateLobby ? "Private Room — Only accessible via code" : "Queuing — Visible in Global Lobby"}
@@ -502,9 +502,9 @@ export default function Games() {
                 <div className="text-6xl font-bold tracking-[0.2em] text-text-primary">{roomId}</div>
                 <button 
                   onClick={copyRoomId}
-                  className="w-12 h-12 bg-[#F0F0EE] rounded-full flex items-center justify-center hover:bg-[#E5E5E1] transition-colors"
+                  className="w-12 h-12 bg-hover-bg rounded-full flex items-center justify-center hover:bg-border-primary transition-colors"
                 >
-                  {copied ? <CheckIcon size={20} className="text-green-500" /> : <CopyIcon size={20} className="text-[#6A6A64]" />}
+                  {copied ? <CheckIcon size={20} className="text-green-500" /> : <CopyIcon size={20} className="text-text-secondary" />}
                 </button>
               </div>
               <p className="text-sm italic opacity-60 mb-8">
@@ -512,7 +512,7 @@ export default function Games() {
               </p>
               <button 
                 onClick={() => { handleDisconnect(); }}
-                className="text-xs font-bold uppercase tracking-widest text-[#9A9A96] hover:text-red-500 transition-colors"
+                className="text-xs font-bold uppercase tracking-widest text-text-secondary hover:text-red-500 transition-colors"
               >
                 Cancel
               </button>
@@ -532,7 +532,7 @@ export default function Games() {
             </p>
             <button 
               onClick={() => { gameConn.current?.destroy(); setMode('menu'); }}
-              className="text-xs font-bold uppercase tracking-widest text-[#9A9A96] hover:text-red-500 transition-colors mt-8"
+              className="text-xs font-bold uppercase tracking-widest text-text-secondary hover:text-red-500 transition-colors mt-8"
             >
               Cancel
             </button>
@@ -551,7 +551,7 @@ export default function Games() {
                   handleDisconnect();
                 }
               }}
-              className="absolute -top-6 right-0 z-50 flex items-center gap-2 px-4 py-2 bg-black/5 hover:bg-red-50 hover:text-red-500 rounded-lg text-xs font-bold uppercase tracking-widest transition-colors"
+              className="absolute -top-6 right-0 z-50 flex items-center gap-2 px-4 py-2 bg-hover-bg hover:bg-red-500/10 hover:text-red-500 rounded-lg text-xs font-bold uppercase tracking-widest transition-colors text-text-primary"
             >
               <LogOutIcon size={14} /> Leave Game
             </button>

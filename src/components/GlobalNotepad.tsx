@@ -44,7 +44,7 @@ export default function GlobalNotepad() {
     <div className="fixed right-0 top-1/2 -translate-y-1/2 z-[100] flex" ref={containerRef}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="w-12 h-12 bg-text-primary text-white flex items-center justify-center rounded-l-2xl hover:translate-x-[-4px] transition-transform"
+        className="w-12 h-12 bg-text-primary text-bg-primary flex items-center justify-center rounded-l-2xl hover:translate-x-[-4px] transition-transform border border-border-primary border-r-0"
       >
         {isOpen ? <ChevronRightIcon size={20} /> : <StickyNoteIcon size={20} />}
       </button>
@@ -55,19 +55,19 @@ export default function GlobalNotepad() {
             initial={{ width: 0, opacity: 0 }}
             animate={{ width: 340, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
-            className="h-[500px] bg-white border border-[#E5E5E1] flex flex-col p-6 rounded-l-2xl overflow-hidden"
+            className="h-[500px] bg-bg-secondary text-text-primary border border-border-primary flex flex-col p-6 rounded-l-2xl overflow-hidden"
           >
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#9A9A96]">Daily Journal</h3>
+              <h3 className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">Daily Journal</h3>
               <div className="flex items-center gap-1">
-                <button onClick={() => changeDate(-1)} className="p-1 hover:bg-[#F0F0EE] rounded transition-colors"><ChevronLeftIcon size={12}/></button>
+                <button onClick={() => changeDate(-1)} className="p-1 hover:bg-hover-bg rounded transition-colors text-text-primary"><ChevronLeftIcon size={12}/></button>
                 <input 
                   type="date"
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
-                  className="text-[10px] font-mono font-bold bg-[#F0F0EE] px-2 py-0.5 rounded outline-none cursor-pointer text-[#4A4A44] hover:bg-[#E5E5E1] transition-colors"
+                  className="text-[10px] font-mono font-bold bg-bg-primary px-2 py-0.5 rounded outline-none cursor-pointer text-text-primary hover:bg-hover-bg transition-colors border border-border-primary/50"
                 />
-                <button onClick={() => changeDate(1)} className="p-1 hover:bg-[#F0F0EE] rounded transition-colors"><ChevronRightIcon size={12}/></button>
+                <button onClick={() => changeDate(1)} className="p-1 hover:bg-hover-bg rounded transition-colors text-text-primary"><ChevronRightIcon size={12}/></button>
               </div>
             </div>
             
@@ -75,10 +75,10 @@ export default function GlobalNotepad() {
               value={notes}
               onChange={(e) => updateNotes(e.target.value)}
               placeholder={`Reflections for ${selectedDate}...`}
-              className="flex-1 bg-transparent border-none outline-none resize-none font-serif text-sm leading-relaxed text-[#4A4A44] mt-4"
+              className="flex-1 bg-transparent border-none outline-none resize-none font-serif text-sm leading-relaxed text-text-secondary mt-4 placeholder:text-text-secondary/50"
             />
             
-            <div className="mt-4 flex items-center justify-between text-[10px] font-mono text-[#BCBCB9] border-t border-[#F0F0EE] pt-4">
+            <div className="mt-4 flex items-center justify-between text-[10px] font-mono text-text-secondary border-t border-border-primary pt-4">
               <span>{notes.length} characters</span>
               <button 
                 onClick={() => updateNotes('')}

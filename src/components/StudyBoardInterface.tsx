@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTheme } from '../ThemeContext';
 import { PencilIcon, SquareIcon, CircleIcon, EraserIcon, MousePointer2Icon, Trash2Icon, TypeIcon, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, FileTextIcon, ZoomInIcon, ZoomOutIcon } from 'lucide-react';
 import AnnotationCanvas from './AnnotationCanvas';
 import { Annotation } from '../types';
@@ -79,10 +80,15 @@ export default function StudyBoardInterface({
   activeColor,
   onColorChange
 }: StudyBoardInterfaceProps) {
+  const { colors: themeColors } = useTheme();
   const [tool, setTool] = useState<'pen' | 'rect' | 'circle' | 'eraser' | 'cursor'>('cursor');
-  const [localColor, setLocalColor] = useState('#1A1A1A');
+  const [localColor, setLocalColor] = useState(themeColors.text);
   const color = activeColor || localColor;
   const setColor = onColorChange || setLocalColor;
+
+  useEffect(() => {
+    setLocalColor(themeColors.text);
+  }, [themeColors.text]);
   
   const [strokeWidth, setStrokeWidth] = useState(3);
   const [scale, setScale] = useState(1);
@@ -148,7 +154,7 @@ export default function StudyBoardInterface({
     };
   }, []);
 
-  const colors = ['#1A1A1A', '#E11D48', '#2563EB', '#16A34A', '#D97706', '#7C3AED'];
+  const colors = [themeColors.text, themeColors.accent, '#2563EB', '#16A34A', '#D97706', '#7C3AED'];
   const tools = [
     { id: 'cursor', icon: MousePointer2Icon, label: 'Select' },
     { id: 'pen', icon: PencilIcon, label: 'Pen' },
@@ -157,9 +163,9 @@ export default function StudyBoardInterface({
   ];
 
   return (
-    <div className="flex-1 flex flex-col bg-[#F5F5F3] h-full" ref={panelRef}>
+    <div className="flex-1 flex flex-col bg-bg-primary h-full" ref={panelRef}>
       {/* Toolbar */}
-      <div className="px-6 py-3 bg-white border-b border-[#E5E5E1] flex items-center justify-between shrink-0 z-50">
+      <div className="px-6 py-3 bg-bg-secondary border-b border-border-primary flex items-center justify-between shrink-0 z-50">
         <div className="flex items-center gap-1">
           {tools.map((t) => (
             <button
@@ -167,7 +173,7 @@ export default function StudyBoardInterface({
               onClick={() => setTool(t.id as any)}
               className={cn(
                 "p-2 rounded transition-all",
-                tool === t.id ? "bg-[#F5F5F3] text-text-primary shadow-sm" : "text-[#9A9A96] hover:text-text-primary hover:bg-[#F5F5F3]"
+                tool === t.id ? "bg-hover-bg text-text-primary shadow-sm" : "text-text-secondary hover:text-text-primary hover:bg-hover-bg"
               )}
               title={t.label}
             >
@@ -175,17 +181,17 @@ export default function StudyBoardInterface({
             </button>
           ))}
           
-          <div className="w-[1px] h-6 bg-[#E5E5E1] mx-2" />
+          <div className="w-[1px] h-6 bg-border-primary mx-2" />
           
           {showTextTools && (
             <>
               <div className="flex items-center gap-0.5">
-                <button onClick={() => document.execCommand('bold')} className="p-1.5 rounded hover:bg-[#F5F5F3] text-[#9A9A96] hover:text-text-primary transition-all"><Bold size={15} /></button>
-                <button onClick={() => document.execCommand('italic')} className="p-1.5 rounded hover:bg-[#F5F5F3] text-[#9A9A96] hover:text-text-primary transition-all"><Italic size={15} /></button>
-                <button onClick={() => document.execCommand('underline')} className="p-1.5 rounded hover:bg-[#F5F5F3] text-[#9A9A96] hover:text-text-primary transition-all"><Underline size={15} /></button>
-                <div className="w-[1px] h-4 bg-[#E5E5E1] mx-1" />
+                <button onClick={() => document.execCommand('bold')} className="p-1.5 rounded hover:bg-hover-bg text-text-secondary hover:text-text-primary transition-all"><Bold size={15} /></button>
+                <button onClick={() => document.execCommand('italic')} className="p-1.5 rounded hover:bg-hover-bg text-text-secondary hover:text-text-primary transition-all"><Italic size={15} /></button>
+                <button onClick={() => document.execCommand('underline')} className="p-1.5 rounded hover:bg-hover-bg text-text-secondary hover:text-text-primary transition-all"><Underline size={15} /></button>
+                <div className="w-[1px] h-4 bg-border-primary mx-1" />
               </div>
-              <div className="w-[1px] h-6 bg-[#E5E5E1] mx-2" />
+              <div className="w-[1px] h-6 bg-border-primary mx-2" />
             </>
           )}
 
@@ -196,7 +202,7 @@ export default function StudyBoardInterface({
                 onClick={() => setColor(c)}
                 className={cn(
                   "w-4 h-4 rounded-full border transition-transform hover:scale-125",
-                  color === c ? "border-text-primary ring-2 ring-offset-1 ring-[#E5E5E1]" : "border-transparent"
+                  color === c ? "border-text-primary ring-2 ring-offset-1 ring-border-primary" : "border-transparent"
                 )}
                 style={{ backgroundColor: c }}
               />
@@ -212,7 +218,7 @@ export default function StudyBoardInterface({
                 if (onClearAll) onClearAll();
               }
             }}
-            className="p-2 text-[#9A9A96] hover:text-red-500 transition-colors"
+            className="p-2 text-text-secondary hover:text-red-500 transition-colors"
             title="Clear Annotations"
           >
             <Trash2Icon size={16} />
@@ -222,9 +228,9 @@ export default function StudyBoardInterface({
 
       <div className="flex-1 flex overflow-hidden">
         {/* Tool Settings */}
-        <div className="w-14 bg-white border-r border-[#E5E5E1] flex flex-col items-center py-6 gap-8 shrink-0 overflow-y-auto">
+        <div className="w-14 bg-bg-secondary border-r border-border-primary flex flex-col items-center py-6 gap-8 shrink-0 overflow-y-auto">
           <div className="flex flex-col items-center gap-4">
-            <div className="text-[8px] font-bold uppercase tracking-[0.2em] text-[#9A9A96] rotate-180" style={{ writingMode: 'vertical-rl' }}>Weight</div>
+            <div className="text-[8px] font-bold uppercase tracking-[0.2em] text-text-secondary rotate-180" style={{ writingMode: 'vertical-rl' }}>Weight</div>
             <div className="flex flex-col gap-2">
               {[1, 3, 6, 10].map((s) => (
                 <button
@@ -232,7 +238,7 @@ export default function StudyBoardInterface({
                   onClick={() => setStrokeWidth(s)}
                   className={cn(
                     "w-6 h-6 rounded flex items-center justify-center transition-all",
-                    strokeWidth === s ? "bg-[#1A1A1A] text-white" : "text-[#9A9A96] hover:bg-[#F5F5F3]"
+                    strokeWidth === s ? "bg-text-primary text-bg-primary" : "text-text-secondary hover:bg-hover-bg"
                   )}
                 >
                   <div className="rounded-full bg-current" style={{ width: s/2 + 2, height: s/2 + 2 }} />
@@ -242,9 +248,9 @@ export default function StudyBoardInterface({
           </div>
 
           <div className="flex flex-col items-center gap-6">
-            <div className="text-[8px] font-bold uppercase tracking-[0.2em] text-[#9A9A96] rotate-180" style={{ writingMode: 'vertical-rl' }}>Zoom</div>
+            <div className="text-[8px] font-bold uppercase tracking-[0.2em] text-text-secondary rotate-180" style={{ writingMode: 'vertical-rl' }}>Zoom</div>
             <div className="flex flex-col items-center gap-3">
-              <button onClick={() => setScale(prev => Math.min(prev + 0.1, 5))} className="w-8 h-8 rounded border border-[#E5E5E1] flex items-center justify-center font-bold text-text-primary hover:bg-[#F5F5F3] shadow-sm">+</button>
+              <button onClick={() => setScale(prev => Math.min(prev + 0.1, 5))} className="w-8 h-8 rounded border border-border-primary flex items-center justify-center font-bold text-text-primary hover:bg-hover-bg shadow-sm">+</button>
               <div className="relative w-12 h-6">
                 <input 
                   type="text" 
@@ -261,15 +267,15 @@ export default function StudyBoardInterface({
                       }
                     }
                   }}
-                  className="w-full h-full text-[10px] font-mono text-[#9A9A96] bg-transparent text-center outline-none"
+                  className="w-full h-full text-[10px] font-mono text-text-secondary bg-transparent text-center outline-none"
                 />
               </div>
-              <button onClick={() => setScale(prev => Math.max(prev - 0.1, 0.2))} className="w-8 h-8 rounded border border-[#E5E5E1] flex items-center justify-center font-bold text-text-primary hover:bg-[#F5F5F3] shadow-sm">-</button>
+              <button onClick={() => setScale(prev => Math.max(prev - 0.1, 0.2))} className="w-8 h-8 rounded border border-border-primary flex items-center justify-center font-bold text-text-primary hover:bg-hover-bg shadow-sm">-</button>
             </div>
           </div>
         </div>
 
-        <div className={cn("flex-1 bg-white relative scroll-smooth", isFixed ? "overflow-hidden" : "overflow-auto")} ref={containerRef}>
+        <div className={cn("flex-1 bg-bg-secondary relative scroll-smooth", isFixed ? "overflow-hidden" : "overflow-auto")} ref={containerRef}>
           <div 
             className="relative origin-top-left transition-transform duration-200" 
             ref={contentRef}

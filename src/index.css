@@ -7,9 +7,15 @@
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
   --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
   --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
   --color-accent-primary: var(--accent-primary);
+  --color-accent-hover: var(--accent-hover);
   --color-sidebar-bg: var(--sidebar-bg);
+  --color-border-primary: var(--border-primary);
+  --color-border-secondary: var(--border-secondary);
+  --color-hover-bg: var(--hover-bg);
 }
 
 :root {

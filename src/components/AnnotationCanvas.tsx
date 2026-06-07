@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Stage, Layer, Line, Rect, Circle, Text } from 'react-konva';
 import { Annotation } from '../types';
-import { cn } from '../lib/utils';
+import { cn, safeRandomUUID } from '../lib/utils';
 
 interface AnnotationCanvasProps {
   width: number;
@@ -57,7 +57,7 @@ export default function AnnotationCanvas({
         finishEditing();
         return;
       }
-      const id = crypto.randomUUID();
+      const id = safeRandomUUID();
       setTextPos(pos);
       setEditingTextId(id);
       setTempTextValue('');
@@ -79,7 +79,7 @@ export default function AnnotationCanvas({
 
     setIsDrawing(true);
     const newAnnotation: Annotation = {
-      id: crypto.randomUUID(),
+      id: safeRandomUUID(),
       type: tool,
       color: color,
       strokeWidth: strokeWidth,

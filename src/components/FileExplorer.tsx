@@ -86,17 +86,46 @@ export default function FileExplorer({
       const base64 = event.target?.result as string;
       let type: 'pdf' | 'audio' | 'doc' | 'image' = 'doc';
       let mimeType = file.type;
+      
+      const fileNameLower = file.name.toLowerCase();
 
-      if (file.type.includes('pdf')) {
+      if (file.type.includes('pdf') || fileNameLower.endsWith('.pdf')) {
         type = 'pdf';
-      } else if (file.type.includes('audio') || file.type.includes('video') || file.name.toLowerCase().endsWith('.mp4')) {
+        if (!mimeType) mimeType = 'application/pdf';
+      } else if (
+        file.type.includes('audio') || 
+        file.type.includes('video') || 
+        fileNameLower.endsWith('.mp4') ||
+        fileNameLower.endsWith('.mp3') ||
+        fileNameLower.endsWith('.wav') ||
+        fileNameLower.endsWith('.m4a') ||
+        fileNameLower.endsWith('.ogg') ||
+        fileNameLower.endsWith('.aac') ||
+        fileNameLower.endsWith('.flac')
+      ) {
         type = 'audio';
-        // Help the browser's audio player by using a compatible MIME type
-        if (file.type.includes('video/mp4') || file.name.toLowerCase().endsWith('.mp4')) {
+        if (file.type.includes('video/mp4') || fileNameLower.endsWith('.mp4')) {
           mimeType = 'audio/mp4';
+        } else if (!mimeType) {
+          const ext = fileNameLower.substring(fileNameLower.lastIndexOf('.') + 1);
+          mimeType = `audio/${ext}`;
         }
-      } else if (file.type.includes('image')) {
+      } else if (
+        file.type.includes('image') ||
+        fileNameLower.endsWith('.png') ||
+        fileNameLower.endsWith('.jpg') ||
+        fileNameLower.endsWith('.jpeg') ||
+        fileNameLower.endsWith('.gif') ||
+        fileNameLower.endsWith('.webp') ||
+        fileNameLower.endsWith('.svg')
+      ) {
         type = 'image';
+        if (!mimeType) {
+          const ext = fileNameLower.substring(fileNameLower.lastIndexOf('.') + 1);
+          mimeType = `image/${ext === 'jpg' ? 'jpeg' : ext}`;
+        }
+      } else if (!mimeType) {
+        mimeType = 'text/plain';
       }
       
       addFile({
@@ -194,20 +223,6 @@ export default function FileExplorer({
     }
   };
 
-  const handleCreateDoc = () => {
-    const name = prompt('Document Name:', 'New Document');
-    if (name) {
-      addFile({
-        name: name + '.doc',
-        type: 'doc',
-        content: btoa(unescape(encodeURIComponent(''))),
-        mimeType: 'text/html',
-        parentId: currentFolderId,
-      });
-      window.dispatchEvent(new CustomEvent('lumina-file-added'));
-    }
-  };
-
   const handleCreateFolder = () => {
     const trimmedName = newFolderName.trim();
     if (!trimmedName) return;
@@ -263,8 +278,8 @@ export default function FileExplorer({
           </div>
         </div>
       )}
-      <header className="flex items-center justify-between mb-12 border-b border-black/5 pb-6">
-        <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#9A9A96]">
+      <header className="flex items-center justify-between mb-12 border-b border-border-primary pb-6">
+        <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary">
           <button 
             onClick={() => setCurrentFolderId(null)}
             className="hover:text-text-primary transition-colors"
@@ -297,7 +312,7 @@ export default function FileExplorer({
               }}
               className={cn(
                 "flex items-center gap-2 px-5 py-2 text-[10px] font-bold uppercase tracking-widest border transition-colors rounded",
-                showNotes ? "bg-accent-primary text-white border-accent-primary" : "border-[#E5E5E1] hover:bg-white"
+                showNotes ? "bg-accent-primary text-white border-accent-primary" : "border-border-primary hover:bg-bg-secondary"
               )}
             >
               {showNotes ? 'Close Notes' : 'Open Notes'}
@@ -306,23 +321,15 @@ export default function FileExplorer({
 
 
           <button 
-            onClick={handleCreateDoc}
-            className="flex items-center gap-2 px-5 py-2 text-[10px] font-bold uppercase tracking-widest border border-black/10 hover:bg-black/5 rounded transition-colors"
-          >
-            <FileTextIcon size={14} />
-            Create Doc
-          </button>
-          
-          <button 
             id="tour-new-folder"
             onClick={() => setIsCreatingFolder(true)}
-            className="flex items-center gap-2 px-5 py-2 text-[10px] font-bold uppercase tracking-widest border border-black/10 hover:bg-black/5 rounded transition-colors"
+            className="flex items-center gap-2 px-5 py-2 text-[10px] font-bold uppercase tracking-widest border border-border-primary hover:bg-hover-bg rounded transition-colors"
           >
             <PlusIcon size={14} />
             {isAtRoot ? 'Add Student' : 'New Folder'}
           </button>
           
-          <label className="flex items-center gap-2 px-5 py-2 text-[10px] font-bold uppercase tracking-widest border border-black/10 hover:bg-black/5 rounded transition-colors cursor-pointer">
+          <label className="flex items-center gap-2 px-5 py-2 text-[10px] font-bold uppercase tracking-widest border border-border-primary hover:bg-hover-bg rounded transition-colors cursor-pointer">
             <FolderIcon size={14} />
             Ingest Folder
             <input 
@@ -334,7 +341,7 @@ export default function FileExplorer({
             />
           </label>
 
-          <label id="tour-upload-files" className="flex items-center gap-2 px-5 py-2 text-[10px] font-bold uppercase tracking-widest bg-accent-primary text-white rounded shadow-lg hover:shadow-accent-primary/20 transition-all cursor-pointer">
+          <label id="tour-upload-files" className="flex items-center gap-2 px-5 py-2 text-[10px] font-bold uppercase tracking-widest bg-accent-primary hover:bg-accent-hover text-white rounded shadow-lg hover:shadow-accent-primary/20 transition-all cursor-pointer">
             <UploadIcon size={14} />
             Ingest File
             <input type="file" multiple className="hidden" onChange={handleFileUpload} accept=".pdf,.mp3,.wav,.m4a,.ogg,.aac,.flac,.mp4,.txt,.docx,.png,.jpg,.jpeg,.pptx" />
@@ -350,7 +357,7 @@ export default function FileExplorer({
             <motion.div 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="border border-accent-primary p-8 rounded-2xl flex flex-col gap-4 bg-black/5 aspect-[3/4] justify-center"
+              className="border border-accent-primary p-8 rounded-2xl flex flex-col gap-4 bg-bg-secondary aspect-[3/4] justify-center"
             >
               <input 
                 autoFocus
@@ -369,7 +376,7 @@ export default function FileExplorer({
                 </button>
                 <button 
                   onClick={() => setIsCreatingFolder(false)}
-                  className="flex-1 text-[10px] font-bold uppercase tracking-widest bg-[#F0F0EE] py-2 rounded"
+                  className="flex-1 text-[10px] font-bold uppercase tracking-widest bg-hover-bg py-2 rounded text-text-primary"
                 >
                   Cancel
                 </button>
@@ -383,14 +390,14 @@ export default function FileExplorer({
               key={folder.id}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="group relative border border-black/10 p-8 transition-all cursor-pointer hover:shadow-xl hover:-translate-y-1 aspect-[3/4] flex flex-col justify-between rounded-2xl bg-black/5"
+              className="group relative border border-border-primary p-8 transition-all cursor-pointer hover:shadow-xl hover:-translate-y-1 aspect-[3/4] flex flex-col justify-between rounded-2xl bg-bg-secondary"
               onClick={() => {
                 setCurrentFolderId(folder.id);
                 window.dispatchEvent(new CustomEvent('lumina-folder-entered'));
               }}
             >
               <div>
-                <div className="text-[#BCBCB9] mb-4 group-hover:text-accent-primary transition-colors">
+                <div className="text-text-secondary mb-4 group-hover:text-accent-primary transition-colors">
                   <FolderIcon size={32} strokeWidth={1.5} />
                 </div>
                 {editingFolderId === folder.id ? (
@@ -407,7 +414,7 @@ export default function FileExplorer({
                   <h3 className="font-serif text-lg leading-tight">{folder.name}</h3>
                 )}
               </div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-[#BCBCB9] mt-2">Folder</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary mt-2">Folder</p>
               
               <div className="absolute top-4 right-4 flex gap-1">
                 <button 
@@ -441,7 +448,7 @@ export default function FileExplorer({
               key={file.id}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="group relative border border-black/10 p-8 transition-all cursor-pointer hover:shadow-xl hover:-translate-y-1 aspect-[3/4] flex flex-col justify-between rounded-2xl bg-black/5"
+              className="group relative border border-border-primary p-8 transition-all cursor-pointer hover:shadow-xl hover:-translate-y-1 aspect-[3/4] flex flex-col justify-between rounded-2xl bg-bg-secondary"
               onClick={() => onFileSelect(file)}
             >
               <div>
@@ -462,11 +469,11 @@ export default function FileExplorer({
               <div className="flex flex-col gap-1 mt-4">
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-text-primary">{file.type}</span>
-                  <span className="w-1 h-1 rounded-full bg-[#BCBCB9]" />
-                  <span className="text-[10px] font-mono text-[#9A9A96]">{new Date(file.createdAt).toLocaleDateString()}</span>
+                  <span className="w-1 h-1 rounded-full bg-border-secondary" />
+                  <span className="text-[10px] font-mono text-text-secondary">{new Date(file.createdAt).toLocaleDateString()}</span>
                 </div>
                 {(file as any).size && (
-                  <p className="text-[9px] font-mono text-[#BCBCB9]">
+                  <p className="text-[9px] font-mono text-text-secondary">
                     {Math.round((file as any).size / 1024)} KB • ARCHIVED
                   </p>
                 )}
@@ -493,18 +500,18 @@ export default function FileExplorer({
               initial={{ x: 300, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: 300, opacity: 0 }}
-              className="w-80 bg-white border border-[#E5E5E1] rounded-2xl p-6 flex flex-col shadow-xl sticky top-0 h-fit"
+              className="w-80 bg-bg-secondary border border-border-primary rounded-2xl p-6 flex flex-col shadow-xl sticky top-0 h-fit"
             >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#9A9A96]">Notes for {currentFolder.name}</h3>
+                <h3 className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">Notes for {currentFolder.name}</h3>
               </div>
               <textarea 
-                className="w-full min-h-[300px] bg-[#F9F9F7] p-4 rounded-xl resize-none text-sm font-serif italic outline-none border border-transparent focus:border-accent-primary/20 transition-all placeholder:text-[#BCBCB9]/50"
+                className="w-full min-h-[300px] bg-bg-primary text-text-primary p-4 rounded-xl resize-none text-sm font-serif italic outline-none border border-transparent focus:border-accent-primary/20 transition-all placeholder:text-text-secondary/50"
                 placeholder="Aa"
                 value={currentFolder.notes || ''}
                 onChange={(e) => updateFolder(currentFolder.id, { notes: e.target.value })}
               />
-              <p className="mt-4 text-[9px] font-mono text-[#BCBCB9] leading-relaxed uppercase tracking-tighter">
+              <p className="mt-4 text-[9px] font-mono text-text-secondary leading-relaxed uppercase tracking-tighter">
                 These notes are persistent and tied to this specific student folder.
               </p>
             </motion.div>

@@ -25,13 +25,13 @@ export default function Sidebar({ activeTab, setActiveTab, onWipeAll }: SidebarP
   };
 
   return (
-    <div className="w-64 bg-sidebar-bg border-r border-[#E5E5E1] flex flex-col h-screen">
+    <div className="w-64 bg-sidebar-bg border-r border-border-primary flex flex-col h-screen">
       <div className="p-8">
         <h1 className="text-3xl font-serif italic tracking-tight mb-10 text-text-primary">Lumina.</h1>
-
+ 
         <nav className="flex-1 space-y-8">
           <section>
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#9A9A96] mb-4">Workspace</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary mb-4">Workspace</p>
             <ul className="space-y-1">
               {menuItems.map((item) => {
                 const Icon = item.icon;
@@ -44,8 +44,8 @@ export default function Sidebar({ activeTab, setActiveTab, onWipeAll }: SidebarP
                       className={cn(
                         "w-full flex items-center gap-3 px-3 py-2 rounded text-sm transition-all duration-200",
                         isActive
-                          ? "bg-[#F0F0EE] text-text-primary font-bold shadow-sm"
-                          : "text-[#6A6A64] hover:bg-[#F9F9F7] font-medium"
+                          ? "bg-hover-bg text-text-primary font-bold shadow-sm"
+                          : "text-text-secondary hover:bg-hover-bg/50 font-medium"
                       )}
                     >
                       <Icon size={16} className={cn(isActive ? "text-accent-primary" : "opacity-40")} />
@@ -58,21 +58,21 @@ export default function Sidebar({ activeTab, setActiveTab, onWipeAll }: SidebarP
           </section>
         </nav>
       </div>
-
-      <div className="mt-auto p-6 border-t border-[#E5E5E1] flex flex-col gap-6">
+ 
+      <div className="mt-auto p-6 border-t border-border-primary flex flex-col gap-6">
         <button
           id="tour-wipe-data"
           onClick={handleWipeAll}
-          className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-red-100 w-full"
+          className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-red-500 hover:bg-red-500/10 rounded-lg transition-colors border border-red-500/20 w-full"
         >
           <Trash2Icon size={14} />
           Wipe System Data
         </button>
         <div className="flex gap-2 items-center">
-          <div className="w-3 h-3 rounded-full bg-[#1A1A1A]"></div>
-          <div className="w-3 h-3 rounded-full bg-[#D4D4D1] border border-[#BCBCB9]"></div>
-          <div className="w-3 h-3 rounded-full bg-[#E8E8E6] border border-[#BCBCB9]"></div>
-          <span className="text-[10px] font-bold uppercase ml-2 text-[#9A9A96] tracking-widest">System Themes</span>
+          <div className="w-3 h-3 rounded-full bg-text-primary"></div>
+          <div className="w-3 h-3 rounded-full bg-bg-primary border border-border-primary"></div>
+          <div className="w-3 h-3 rounded-full bg-bg-secondary border border-border-primary"></div>
+          <span className="text-[10px] font-bold uppercase ml-2 text-text-secondary tracking-widest">System Themes</span>
         </div>
       </div>
     </div>
