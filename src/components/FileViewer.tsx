@@ -48,7 +48,7 @@ window.addEventListener('message', e => {
         openFile: false,
         closeFile: false
       },
-      disabledCategories: ['document-open', 'document-close', 'annotation-comment-tool', 'annotation-text'],
+      disabledCategories: ['document-open', 'document-close', 'annotation-comment-tool'],
       annotations: {
         selectAfterCreate: false,
         editAfterCreate: false
